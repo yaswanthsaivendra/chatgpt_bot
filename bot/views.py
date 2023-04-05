@@ -20,8 +20,18 @@ def reply(request):
         # message content from the request
         body = request.POST.get('Body', '')
 
-        # Call the OpenAI API to generate text with ChatGPT
-        messages = [{"role": "user", "content": body}]
+        # Retrieve conversation history for this user from the database
+        conversation_history = Conversation.objects.filter(sender=whatsapp_number).order_by('-id')
+
+        # Prepare the messages to send to OpenAI
+        messages = []
+        for i, conversation in enumerate(conversation_history):
+            messages.append({"role": "user", "content": conversation.response})
+            messages.append({"role": "assistant", "content": conversation.message})
+        
+        messages.append({"role": "user", "content": body})
+
+        # print(messages)
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
