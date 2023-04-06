@@ -21,7 +21,7 @@ def reply(request):
         body = request.POST.get('Body', '')
 
         # Retrieve conversation history for this user from the database
-        conversation_history = Conversation.objects.filter(sender=whatsapp_number).order_by('-id')
+        conversation_history = Conversation.objects.filter(sender=whatsapp_number)
 
         # Prepare the messages to send to OpenAI
         messages = []
